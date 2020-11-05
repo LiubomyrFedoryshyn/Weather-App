@@ -25,10 +25,10 @@ function resetForm(e) {
     setClean(true);
 }
 
-function getForecast(e) {
+function getForecast(e) { // You can try to write arrow functions(const getForecast = () => {}), the are simple and more readable
     e.preventDefault();
 
-    if (city.length === 0) {
+    if (city.length === 0) { // just if (!city)
         return setError(true);
     }
     // Clear state in preparation for new data
@@ -48,9 +48,10 @@ function getForecast(e) {
     .then(response => response.json())
     .then(response => {
         if (response.cod !== 200) {
-            throw new Error()
-        }
-        setResponseObj(response);
+            throw new Error() // bad practice to throw an error here, it would be better if you can track response info and show it somewhere
+        }                     // for example - some simlpe notification or instead of <Conditions/> component 
+                              // than you'll don't have to describe an error in <Conditions/>
+        setResponseObj(response); 
         setLoading(false);
         setClean(false);
     })
@@ -67,9 +68,9 @@ function getForecast(e) {
            <h2>Find Current Weather Conditions</h2>
            <form onSubmit={getForecast}>
             <input  
-                    type="text"
-                    placeholder="Enter City"
-                    maxLength="50"
+                    type="text" // you can use a simple browser validation here, just with a word `required` in input field, so 
+                    placeholder="Enter City" // you will don't need to have an error property at all, just don't
+                    maxLength="50" // forget to include you submit button into a <form> tag with 
                     className={classes.textInput}
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
@@ -100,9 +101,12 @@ function getForecast(e) {
                         hidden={clean}
                         onClick={resetForm}
                         type="button">Reset</button>
-            </form>
-           <Conditions
-           
+            </form> 
+// the main mistake here is that you are loading <Conditions/> component in all cases, even if the response is empty or an arror occured
+// to make a better performance - remove arror message to a saparete component, loader - to another, and only if the response is not empty -
+// load your component here
+// than you would have such logic: Object.keys(responseObj).length > 0 && <Conditions/> or responseObj.length > 0 && <Conditions/> in case it's an array
+           <Conditions           
                 responseObj={responseObj}
                 error={error} //new
                 loading={loading} 
